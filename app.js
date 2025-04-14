@@ -5,6 +5,9 @@ const port = 3000
 app.set('view engine', 'pug')
 app.use(express.static('public'))
 
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
 app.get('/', (req, res) => {
     res.render('index', {})
 })
