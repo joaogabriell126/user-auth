@@ -1,3 +1,5 @@
+import { createHash } from 'crypto'
+
 const express = require('express')
 const app = express()
 const port = 3000
@@ -15,24 +17,20 @@ app.get('/', (req, res) => {
     res.render('index', {})
 })
 
-app.get('/register', (req, res) =>{
+app.get('/register', (req, res) => {
     res.render('register')
 
 })
 
-app.post('/register', async (req, res) =>{
-    const { email, password, confirm} = req.body;
+app.post('/register', async (req, res) => {
+    const { email, password, confirm } = req.body;
 
-    if (password !== confirm){
-        return res.status(400).json({ mensagem: 'As senhas estão erradas' });
-    } else{
-        await prisma.user.create({
-            data: {
-                email: email,
-                password: password,
-            }
-        })
-    }
+    await prisma.user.create({
+        data: {
+            email: email,
+            password: password,
+        }
+    })
     res.redirect("/")
 })
 
