@@ -1,5 +1,3 @@
-import { createHash } from 'crypto'
-
 const express = require('express')
 const app = express()
 const port = 3000
@@ -13,25 +11,52 @@ app.use(express.json());
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+const bcrypt = require('bcrypt')
+
 app.get('/', (req, res) => {
     res.render('index', {})
 })
 
 app.get('/register', (req, res) => {
     res.render('register')
+})
 
+app.get('/welcome', (req, res) => {
+    res.render('welcome');
 })
 
 app.post('/register', async (req, res) => {
-    const { email, password, confirm } = req.body;
-
+    const { email, password, confirm } = req.body
+    const hash = await bcrypt.hash(password, 10)
     await prisma.user.create({
         data: {
             email: email,
-            password: password,
+            password: hash,
         }
     })
     res.redirect("/")
+})
+
+app.post('/users', async (req, res) => {
+    const { email, password} = req.body
+    const user = await prisma.user.findUnique({
+        where: { 
+            email
+        }
+    });
+    
+    if (!user) {
+        return res.status(400).send("Usuário não encontrado.")
+    }
+
+    const senhaCorreta = await bcrypt.compare(password, user.password)
+    
+    if (senhaCorreta){
+       res.redirect("/welcome")
+    } else{
+        res.send("Usuário não encontrado") 
+        
+    }
 })
 
 app.listen(port, () => {
