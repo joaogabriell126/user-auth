@@ -14,7 +14,11 @@ const prisma = new PrismaClient();
 const bcrypt = require('bcrypt')
 
 app.get('/', (req, res) => {
-    res.render('index', {})
+    res.render('index')
+})
+
+app.get('/login', (req, res) => {
+    res.render('login', {})
 })
 
 app.get('/register', (req, res) => {
@@ -34,7 +38,7 @@ app.post('/register', async (req, res) => {
             password: hash,
         }
     })
-    res.redirect("/")
+    res.redirect("/login")
 })
 
 app.post('/users', async (req, res) => {
